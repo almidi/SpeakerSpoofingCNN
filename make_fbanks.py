@@ -3,8 +3,9 @@ from __future__ import print_function
 import os
 import numpy
 import soundfile as sf
+import sys
 
-train_phase = 'train' # 'dev' 'eval'
+train_phase = sys.argv[1]
 
 base_dir ='data'
 
@@ -86,9 +87,11 @@ print('total_frames = ', total_frames)
 if not os.path.exists(fbank_dir):
     os.makedirs(fbank_dir)
 
+
 for filter_banks, filename in zip(fbanks_list, filenames):
     filter_banks = filter_banks.astype('float32')
     fbank_fullpathname = os.path.join(fbank_dir, filename[:-4]+'.cmp')
+    print(filter_banks)
     with open(fbank_fullpathname, 'wb') as fid:
         filter_banks.tofile(fid)
 
