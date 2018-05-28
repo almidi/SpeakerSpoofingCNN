@@ -6,10 +6,12 @@ import sys
 import random
 
 class fdata(object):
-    fmaps_list = []
-    fmaps_attr_list = []
 
-    def make_fmaps(filterbanks):
+    def __init__(self):
+        self.fmaps_list = []
+        self.fmaps_attr_list = []
+
+    def make_fmaps(self,filterbanks):
         # Init Indexes
         map = [n for n in range(0,len(filterbanks))]
         map_h = [0 for n in range(0,8)]
@@ -71,6 +73,14 @@ class fdata(object):
                 self.fmaps_attr_list.extend(fmaps_attr_temp)
 
 
+
     # c = list(zip(fmaps_list, fmaps_attr_list))
     # random.shuffle(c)
     # fmaps_list, fmaps_attr_list = zip(*c)
+
+
+data = fdata()
+data.format_data('dev')
+
+fmaps = data.fmaps_list
+attrs = data.fmaps_attr_list
