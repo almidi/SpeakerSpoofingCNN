@@ -18,7 +18,7 @@ network.define_predict_operations()
 
 # Recover the parameters of the model
 print("Recover the parameters of the model")
-sess = tf.Session()
+sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 #Restore Variables
 print("Restore Variables")
