@@ -13,8 +13,8 @@ dev = 0
 limit = 0
 
 if len(sys.argv)>3 : arg = sys.argv[2]
-if arg == '-dev' : 
-    dev = 1
+if arg == '-d' : 
+    deb = 1
     limit = int(sys.argv[3]) 
 
 base_dir ='data'
@@ -42,7 +42,7 @@ filenames = [x for x in os.listdir(wav_dir) if x.endswith(".wav")]
 fbanks_list = []
 total_frames = 0
 
-if dev : filenames = filenames [:limit]
+if deb : filenames = filenames [:limit]
 
 print("Making \""+train_phase+"\" CMP files...")
 for filename in progressbar.progressbar(filenames):
