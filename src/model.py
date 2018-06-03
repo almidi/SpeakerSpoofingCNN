@@ -185,7 +185,13 @@ class CNN(object):
         total_samples = len(self.train_data)
         batches = total_samples // 256
 
-        print("Training Batches" + str(batch))
+        # Shuffle Images
+        
+        c = list(zip(self.X_data_train, Y_data_train))
+        random.shuffle(c)
+        self.X_data_train, Y_data_train = zip(*c)
+
+        print("Training Batches")
         for batch in progressbar.progressbar(range(0, batches)):
             index = batch * 256
             mean_loss, _ = sess.run([self.train_loss, self.update_ops],
@@ -202,11 +208,12 @@ class CNN(object):
 
     def valid_epoch(self, sess):
         valid_loss = 0
-        batch = 0
+        batch = (batch+1)
 
         total_samples = len(self.valid_data)
         batches = total_samples // 256
 
+        print("Validate Batches")
         for batch in progressbar.progressbar(range(0, batches)):  # loop through train batches:
             index = batch * 256
             mean_loss = sess.run(self.valid_loss, feed_dict={self.X_data_valid: self.valid_data[index:index + 256],
@@ -217,7 +224,7 @@ class CNN(object):
             valid_loss += mean_loss
 
         if total_samples > 0:
-            valid_loss /= batch
+            valid_loss /= (batch+1)
         return valid_loss
 
     def train(self, sess):
