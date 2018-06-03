@@ -1,8 +1,9 @@
 import os
+import sys
 import numpy as np
 import tensorflow as tf
 
-sys.path.insert(0, './lib')
+sys.path.insert(0, '../lib')
 
 from model import CNN
 from model_io import get_modle_id
