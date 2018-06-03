@@ -16,7 +16,7 @@ network = CNN(model_id)
 network.define_train_operations()
 
 # Train the network
-sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+sess = tf.Session()
 try:
     # network.train(cfg, coord, sess) TODO What is cfg , coord ?
     network.train(sess)
