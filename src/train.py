@@ -1,8 +1,11 @@
 import os
 import numpy as np
 import tensorflow as tf
+
+sys.path.insert(0, './lib')
+
 from model import CNN
-from lib.model_io import get_modle_id
+from model_io import get_modle_id
 
 model_id = get_modle_id()
 
