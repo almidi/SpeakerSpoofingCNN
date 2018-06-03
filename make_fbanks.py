@@ -4,6 +4,7 @@ import os
 import numpy
 import soundfile as sf
 import sys
+import progressbar
 
 train_phase = sys.argv[1]
 
@@ -32,10 +33,17 @@ filenames = [x for x in os.listdir(wav_dir) if x.endswith(".wav")]
 fbanks_list = []
 total_frames = 0
 
+limit = 100
+itteration = 0
 
+print("Making \""+train_phase+"\" CMP files...")
+for filename in progressbar.progressbar(filenames):
 
-for filename in filenames:
-    print(filename)
+    #TODO LIMITS ONLY FOR TEST PURPOSES
+    if itteration>limit:
+        break
+    itteration +=1
+
     wav_fullpathname = os.path.join(wav_dir, filename)
   
     signal, sample_rate = sf.read(wav_fullpathname) 

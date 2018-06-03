@@ -32,14 +32,14 @@ def write_model_id(filename, model_id):
     fid.close() 
 
 def get_modle_id():
-    model_id_filename = #Define it
+    model_id_filename = "model"#Define it
     model_id = read_model_id(model_id_filename) + 1 # Reserve the next model_id. If file does not exists then create it 
     write_model_id(model_id_filename, model_id) 
 
     return model_id 
 
 def save_variables(sess, saver, epoch, model_id): 
-    model_path = # Define it
+    model_path = "saved_models/"# Define it
     if not os.path.exists(model_path):
         os.makedirs(model_path)
     checkpoint_path = os.path.join(model_path, 'cnn')
@@ -51,11 +51,13 @@ def restore_variables(sess):
         if not ('state_buffer' in var.name or 'pointer' in var.name)}
     saver = tf.train.Saver(variables_to_restore)
 
-    model_path = # Define it
+    model_path = "saved_models/"# Define it
     print(model_path)   
     ckpt = tf.train.get_checkpoint_state(model_path)  
     print(ckpt.model_checkpoint_path)
-    saver.restore(sess, ckpt.model_checkpoint_path) 
+    saver.restore(sess, ckpt.model_checkpoint_path)
+
+
 
 
   

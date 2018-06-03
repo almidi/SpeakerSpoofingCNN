@@ -1,0 +1,3 @@
+#!/home/almidi/Bookmarks/TUC/PatternRecognition/FinalProject/Git/SpeakerSpoofingCNN/venv/bin/python
+from numba.pycc import main
+main()
