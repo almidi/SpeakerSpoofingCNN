@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import tensorflow as tf
-from src.model import CNN
+from model import CNN
 from lib.model_io import get_modle_id
 
 model_id = get_modle_id()
