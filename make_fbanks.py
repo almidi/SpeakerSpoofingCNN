@@ -99,7 +99,6 @@ if not os.path.exists(fbank_dir):
 for filter_banks, filename in zip(fbanks_list, filenames):
     filter_banks = filter_banks.astype('float32')
     fbank_fullpathname = os.path.join(fbank_dir, filename[:-4]+'.cmp')
-    print(filter_banks)
     with open(fbank_fullpathname, 'wb') as fid:
         filter_banks.tofile(fid)
 
