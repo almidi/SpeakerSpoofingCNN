@@ -8,6 +8,10 @@ from lib.model_io import get_modle_id
 
 model_id = get_modle_id()
 
+#Enable gpu memory growth
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+
 # Create the network
 # network = CNN(cfg, model_id) TODO What is cfg ??
 network = CNN(model_id)
@@ -16,7 +20,7 @@ network = CNN(model_id)
 network.define_train_operations()
 
 # Train the network
-sess = tf.Session()
+sess = tf.Session(config=config)
 try:
     # network.train(cfg, coord, sess) TODO What is cfg , coord ?
     network.train(sess)

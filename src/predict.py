@@ -5,6 +5,11 @@ from src.model import CNN
 from lib.model_io import get_modle_id
 from lib.model_io import restore_variables
 
+
+#Enable gpu memory growth
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+
 print("Get Model ID")
 model_id = get_modle_id()
 
@@ -18,7 +23,7 @@ network.define_predict_operations()
 
 # Recover the parameters of the model
 print("Recover the parameters of the model")
-sess = tf.Session()
+sess = tf.Session(config=config)
 
 #Restore Variables
 print("Restore Variables")
