@@ -187,9 +187,9 @@ class CNN(object):
 
         # Shuffle Images
         
-        c = list(zip(self.X_data_train, Y_data_train))
+        c = list(zip(self.train_data, train_attrs))
         random.shuffle(c)
-        self.X_data_train, Y_data_train = zip(*c)
+        self.train_data, train_attrs = zip(*c)
 
         print("Training Batches")
         for batch in progressbar.progressbar(range(0, batches)):
