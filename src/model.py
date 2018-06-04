@@ -244,7 +244,7 @@ class CNN(object):
         min_valid_loss = sys.float_info.max
         epoch = 0
         while (epoch < n_epochs):
-            print("Training Epoch:" + str(epoch)+"/"+str(n_epochs))
+            print("Training Epoch:" + str(epoch+1)+"/"+str(n_epochs))
             epoch += 1
             epoch_start_time = time.clock()
 

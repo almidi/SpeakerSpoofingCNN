@@ -9,7 +9,7 @@ import progressbar
 train_phase = sys.argv[1]
 
 arg = ""
-dev = 0
+deb = 0
 limit = 0
 
 if len(sys.argv)>3 : arg = sys.argv[2]
