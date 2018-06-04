@@ -202,13 +202,13 @@ class CNN(object):
                 break
             train_loss += mean_loss
         if total_samples > 0:
-            train_loss /= batch  # TODO Why is this done ?
+            train_loss /= (batch+1)  # TODO Why is this done ?
 
         return train_loss
 
     def valid_epoch(self, sess):
         valid_loss = 0
-        batch = (batch+1)
+        batch = 0
 
         total_samples = len(self.valid_data)
         batches = total_samples // 256
