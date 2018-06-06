@@ -11,7 +11,7 @@ model_id = get_modle_id()
 #Enable gpu memory growth
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
-
+# config.log_device_placement=True
 # Create the network
 # network = CNN(cfg, model_id) TODO What is cfg ??
 network = CNN(model_id)

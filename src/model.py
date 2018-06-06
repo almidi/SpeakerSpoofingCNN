@@ -9,7 +9,7 @@ from lib.model_io import *
 from src.fdata import fdata
 import progressbar
 import random
-from lib.precision import _FLOATX
+# from lib.precision import _FLOATX
 
 
 class CNN(object):
@@ -121,7 +121,7 @@ class CNN(object):
             pool2_flat = tf.reshape(pool2, [-1, 4 * 16 * 64])
 
             # Dense Layer
-            dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
+            dense = tf.layers.dense(inputs=pool2_flat, units=2, activation=tf.nn.relu)
 
             # # Add dropout operation; 0.6 probability that element will be kept
             # dropout = tf.layers.dropout(
@@ -131,7 +131,9 @@ class CNN(object):
             # logits = tf.layers.dense(inputs=dropout, units=10)
 
             # Logits layer
-            logits = tf.layers.dense(inputs=dense, units=2)
+            dense2 = tf.layers.dense(inputs=dense, units=2)
+
+            logits = dense
             Y = logits
 
         return Y
@@ -152,12 +154,12 @@ class CNN(object):
             tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.Y_data_train, logits=self.Y_net_train,
                                                            name='train_loss'))
 
-        # define learning rate decay method 
+        # define learning rate decay method  
         global_step = tf.Variable(0, trainable=False, name='global_step')
-        learning_rate = 0.1  # Define it TODO is learning rate correct ?
+        learning_rate = 0.001  # Define it TODO is learning rate correct ?
 
         # define the optimization algorithm
-        optimizer = tf.train.GradientDescentOptimizer(
+        optimizer = tf.train.AdamOptimizer(
             learning_rate=learning_rate)  # Define it TODO Is optimizer correct ? TODO Check more optimizers.. maybe Adam
 
         trainable = tf.trainable_variables()
@@ -202,7 +204,7 @@ class CNN(object):
                 break
             train_loss += mean_loss
         if total_samples > 0:
-            train_loss /= (batch+1)  # TODO Why is this done ?
+            train_loss /= batch  # TODO Why is this done ?
 
         return train_loss
 
@@ -224,13 +226,13 @@ class CNN(object):
             valid_loss += mean_loss
 
         if total_samples > 0:
-            valid_loss /= (batch+1)
+            valid_loss /= batch
         return valid_loss
 
     def train(self, sess):
         start_time = time.clock()
 
-        n_early_stop_epochs = 32  # Define it TODO WTF ???????
+        n_early_stop_epochs = 12  # Define it TODO WTF ???????
         n_epochs = 64  # Define it
 
         saver = tf.train.Saver(var_list=tf.trainable_variables(), max_to_keep=4)
