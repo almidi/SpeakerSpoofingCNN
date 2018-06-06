@@ -29,7 +29,7 @@ class fdata(object):
 
         return fmaps
 
-    def get_data(self, data,base_dir = '../data',attrs_dir = '../data/protocol_V2'):
+    def get_data(self, data,base_dir = './data',attrs_dir = './data/protocol_V2'):
 
         if data == 'train':
             fbank_dir = os.path.join(base_dir, 'ASVspoof2017_V2_train_fbank')
