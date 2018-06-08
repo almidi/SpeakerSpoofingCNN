@@ -92,9 +92,6 @@ class CNN(object):
         with tf.variable_scope("inference", reuse=reuse):
             # Implement your network here
 
-            # Input Layer
-            input_layer = tf.reshape(X, [-1, 17, 64, 1])
-
             # Convolutional Layer #1
             conv1 = tf.layers.conv2d(
                 inputs=input_layer,
@@ -144,8 +141,8 @@ class CNN(object):
         # Read Train Files
         self.get_train_data()
 
-        self.X_data_train = tf.placeholder(tf.float32)  # Define this TODO train data placeholders
-        self.Y_data_train = tf.placeholder(tf.int32)  # Define this TODO do placeholders need self. ?
+        self.X_data_train = tf.placeholder(tf.float32,shape = [256, 17, 64, 1])  # Define this TODO train data placeholders
+        self.Y_data_train = tf.placeholder(tf.int32,shape=256)  # Define this TODO do placeholders need self. ?
 
         self.Y_net_train = self.inference(self.X_data_train, reuse=False)  # Network prediction
 
@@ -170,8 +167,8 @@ class CNN(object):
         # Read Validation Files
         self.get_valid_data()
 
-        self.X_data_valid = tf.placeholder(tf.float32)  # Define this  TODO valid data placeholders
-        self.Y_data_valid = tf.placeholder(tf.int32)  # Define this
+        self.X_data_valid = tf.placeholder(tf.float32, shape = [256, 17, 64, 1])  # Define this  TODO valid data placeholders
+        self.Y_data_valid = tf.placeholder(tf.int32, 256)  # Define this
 
         self.Y_net_valid = self.inference(self.X_data_valid, reuse=True)  # Network prediction
 
@@ -278,7 +275,7 @@ class CNN(object):
     # TODO Predictions
     def define_predict_operations(self):
         self.get_test_data()
-        self.X_test_data = tf.placeholder(tf.float32)
+        self.X_test_data = tf.placeholder(tf.float32, shape = [None, 17, 64, 1])
 
         # Pass through model
         self.Y_net_test = self.inference(self.X_test_data, reuse=False)
