@@ -94,7 +94,7 @@ class CNN(object):
 
             # Convolutional Layer #1
             conv1 = tf.layers.conv2d(
-                inputs=input_layer,
+                inputs=X,
                 filters=32,
                 kernel_size=[5, 5],
                 padding="same",
