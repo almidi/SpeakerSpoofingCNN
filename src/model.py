@@ -12,6 +12,7 @@ import random
 # from lib.precision import _FLOATX
 
 
+
 class CNN(object):
 
     def __init__(self, model_id=None):
@@ -22,6 +23,8 @@ class CNN(object):
         self.valid_attrs = []
         self.test_data = []
         self.test_complete_attrs = []
+
+        self.BATCH_SIZE = 256
 
     # Get Train Data
     def get_train_data(self):
@@ -92,6 +95,7 @@ class CNN(object):
         with tf.variable_scope("inference", reuse=reuse):
             # Implement your network here
 
+
             # Convolutional Layer #1
             conv1 = tf.layers.conv2d(
                 inputs=X,
@@ -141,7 +145,7 @@ class CNN(object):
         # Read Train Files
         self.get_train_data()
 
-        self.X_data_train = tf.placeholder(tf.float32,shape = [256, 17, 64])  # Define this TODO train data placeholders
+        self.X_data_train = tf.placeholder(tf.float32,shape = [256, 17, 64,1])  # Define this TODO train data placeholders
         self.Y_data_train = tf.placeholder(tf.int32,shape=256)  # Define this TODO do placeholders need self. ?
 
         self.Y_net_train = self.inference(self.X_data_train, reuse=False)  # Network prediction
@@ -167,7 +171,7 @@ class CNN(object):
         # Read Validation Files
         self.get_valid_data()
 
-        self.X_data_valid = tf.placeholder(tf.float32, shape = [256, 17, 64])  # Define this  TODO valid data placeholders
+        self.X_data_valid = tf.placeholder(tf.float32, shape = [256, 17, 64,1])  # Define this  TODO valid data placeholders
         self.Y_data_valid = tf.placeholder(tf.int32, 256)  # Define this
 
         self.Y_net_valid = self.inference(self.X_data_valid, reuse=True)  # Network prediction
@@ -193,9 +197,14 @@ class CNN(object):
         print("Training Batches")
         for batch in progressbar.progressbar(range(0, batches)):
             index = batch * 256
+
+            data_batch = self.train_data[index:index + 256]
+            data_batch = np.reshape(data_batch, [256, 17, 64, 1])
+            attr_batch = self.train_attrs[index:index + 256]
+
             mean_loss, _ = sess.run([self.train_loss, self.update_ops],
-                                    feed_dict={self.X_data_train: self.train_data[index:index + 256],
-                                               self.Y_data_train: self.train_attrs[index:index + 256]})
+                                    feed_dict={self.X_data_train: data_batch,
+                                               self.Y_data_train: attr_batch})
             if math.isnan(mean_loss):
                 print('train cost is NaN')
                 break
@@ -215,8 +224,13 @@ class CNN(object):
         print("Validate Batches")
         for batch in progressbar.progressbar(range(0, batches)):  # loop through train batches:
             index = batch * 256
-            mean_loss = sess.run(self.valid_loss, feed_dict={self.X_data_valid: self.valid_data[index:index + 256],
-                                                             self.Y_data_valid: self.valid_attrs[index:index + 256]})
+
+            data_batch = self.valid_data[index:index + 256]
+            data_batch = np.reshape(data_batch, [256, 17, 64, 1])
+            attr_batch = self.valid_attrs[index:index + 256]
+
+            mean_loss = sess.run(self.valid_loss, feed_dict={self.X_data_valid: data_batch,
+                                                             self.Y_data_valid: attr_batch})
             if math.isnan(mean_loss):
                 print('valid cost is NaN')
                 break

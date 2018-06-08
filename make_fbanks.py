@@ -5,6 +5,7 @@ import numpy
 import soundfile as sf
 import sys
 import progressbar
+import random
 
 train_phase = sys.argv[1]
 
@@ -42,7 +43,7 @@ filenames = [x for x in os.listdir(wav_dir) if x.endswith(".wav")]
 fbanks_list = []
 total_frames = 0
 
-if deb : filenames = filenames [:limit]
+if deb : filenames = ut_images = random.sample(filenames, limit)
 
 print("Making \""+train_phase+"\" CMP files...")
 for filename in progressbar.progressbar(filenames):
