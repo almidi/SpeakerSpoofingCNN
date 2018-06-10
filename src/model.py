@@ -43,9 +43,9 @@ class CNN(object):
         self.train_data = np.array(self.train_data, np.float32)
 
         #get mean
-        self.mean = np.mean(self.train_data)
+        self.mean = datareader.mean
         #get standard deviation
-        self.std = np.std(self.train_data)
+        self.std = datareader.std
 
         #normalize dataset
         print("Normalizing Train Data:")

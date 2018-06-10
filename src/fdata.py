@@ -11,6 +11,8 @@ class fdata(object):
     def __init__(self):
         self.fmaps_list = []
         self.fmaps_attr_list = []
+        self.mean = 0
+        self.std = 1
 
     def make_fmaps(self,filterbanks):
         # Init Indexes
@@ -55,6 +57,7 @@ class fdata(object):
                 att = c.split(' ')
                 attrs.append(att)
         print("Reading \""+data+"\" CMP files...")
+        fmaps_for_norm = []
         for filename in progressbar.progressbar(filenames) :
             # print(filename)
 
@@ -72,8 +75,17 @@ class fdata(object):
                 #This is why I love python...
                 fmaps_attr_temp = [attr[:] for attr in attrs if attr[0] == self.wavfilenames[filenames.index(filename)] for k in fmaps_temp]
 
+                #Mean And SD will be calculated without the first and last 3 slices of each utterance
+                fmaps_for_norm.extend(fmaps_temp[3:len(fmaps_temp)-3])
+
                 self.fmaps_list.extend(fmaps_temp)
                 self.fmaps_attr_list.extend(fmaps_attr_temp)
+
+
+        #get mean
+        self.mean = np.mean(self.fmaps_for_norm)
+        #get standard deviation
+        self.std = np.std(self.fmaps_for_norm)
 
 
 
