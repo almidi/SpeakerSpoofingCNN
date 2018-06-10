@@ -33,3 +33,7 @@ Thumbs.db
 
 # venv #
 /venv
+
+#Models and Stats#
+/src/saved_models
+/src/saved_model_stats

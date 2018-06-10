@@ -102,8 +102,8 @@ class CNN(object):
 
         print("Normalizing Test Data:")
         for i in progressbar.progressbar(range(0,len(self.test_data))):
-            self.test_data = np.subtract(self.test_data,self.mean)
-            self.test_data = np.divide(self.test_data,self.std)
+            self.test_data[i] = np.subtract(self.test_data[i],self.mean)
+            self.test_data[i] = np.divide(self.test_data[i],self.std)
 
         self.test_complete_attrs = datareader.fmaps_attr_list  # get attributes
         self.filenames = datareader.wavfilenames

@@ -11,7 +11,7 @@ for filename in filenames:
     valid_losses_plt = plt.plot(dict.get('valid_losses'), label='Valid Losses')
     plt.legend()
     text = "Model: " + dict.get("model") + ", Epochs: " + str(dict.get("epochs")) + ", Early_Stop: " + str(dict.get("early_stop"))
-    text += "\nLearning Rate: " + str(dict.get("learning_rate")) + ", Batch Normalization: " + str(dict.get("batch_norm")) + ", Accuracy: " + str(dict.get("accuracy"))
+    text += "\nLearning Rate: " + str(dict.get("learning_rate")) + ", Batch Norm: " + str(dict.get("batch_norm")) + ", Accuracy: " + str(round(dict.get("accuracy"),2)) + "%"
     plt.title(text)
     plt.xlabel("Epochs")
     plt.ylabel("Losses")
