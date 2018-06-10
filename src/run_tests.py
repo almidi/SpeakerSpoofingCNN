@@ -7,9 +7,9 @@ from src.predict import predict
 # Caution ! Train one at a time !!
 ########################################################################################################################
 # Train Model
-dict = train(epochs = 64,model='baseline',early_stop=6,learning_rate=0.00005,batch_norm=True,batch_size=256)
+dict = train(epochs = 64,model='baseline',early_stop=6,learning_rate=0.01,batch_norm=True,batch_size=256)
 # Predict runs on last model
-dict['accuracy'] = predict(epochs = 64,model='baseline',early_stop=6,learning_rate=0.00005,batch_norm=True,batch_size=256)
+dict['accuracy'] = predict(epochs = 64,model='baseline',early_stop=6,learning_rate=0.01,batch_norm=True,batch_size=256)
 # Save data
 save_model_stats(dict.get('model_id'),dict)
 
