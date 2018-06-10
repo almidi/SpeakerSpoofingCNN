@@ -98,7 +98,7 @@ class CNN(object):
         datareader.get_data('eval')
         self.test_data = datareader.fmaps_list  # get images
 
-        print("Normalizing Valid Data:")
+        print("Normalizing Test Data:")
         for i in progressbar.progressbar(range(0,len(self.test_data)))
             self.test_data = np.subtract(self.test_data,mean)
             self.test_data = np.divide(self.test_data,std)
