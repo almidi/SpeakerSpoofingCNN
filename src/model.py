@@ -9,13 +9,14 @@ from lib.model_io import *
 from src.fdata import fdata
 import progressbar
 import random
-# from lib.precision import _FLOATX
 
+
+# from lib.precision import _FLOATX
 
 
 class CNN(object):
 
-    def __init__(self, model_id=None):
+    def __init__(self, model_id=None, model='baseline', batch_size=256, learning_rate=0.0001, epochs=12, early_stop=4, batch_norm=True):
         self.model_id = model_id
         self.train_data = []
         self.train_attrs = []
@@ -23,14 +24,22 @@ class CNN(object):
         self.valid_attrs = []
         self.test_data = []
         self.test_complete_attrs = []
+        self.BATCH_SIZE = batch_size
+        self.LEARNING_RATE = learning_rate
+        self.EPOCHS = epochs
+        self.EARLY_STOP = early_stop
+        self.MODEL = model
+        self.BATCH_NORM = batch_norm
 
-        self.BATCH_SIZE = 256
-
+    def reset(self):
+        tf.reset_default_graph
     # Get Train Data
     def get_train_data(self):
         datareader = fdata()
         datareader.get_data('train')
         self.train_data = datareader.fmaps_list  # get images
+        self.train_data = np.array(self.train_data, np.float32)
+
         attrs = datareader.fmaps_attr_list  # get attributes
 
         # make attributes binary
@@ -42,11 +51,15 @@ class CNN(object):
             else:
                 self.train_attrs.append(1)
 
+        self.train_attrs = np.array(self.train_attrs, np.int32)
+
     # Get Validation Data
     def get_valid_data(self):
         datareader = fdata()
         datareader.get_data('dev')
         self.valid_data = datareader.fmaps_list  # get images
+        self.valid_data = np.array(self.valid_data, np.float32)
+
         attrs = datareader.fmaps_attr_list  # get attributes
 
         # make attributes binary
@@ -57,6 +70,8 @@ class CNN(object):
                 self.valid_attrs.append(0)
             else:
                 self.valid_attrs.append(1)
+
+        self.valid_attrs = np.array(self.valid_attrs, np.int32)
 
     # Get Test Data
     def get_test_data(self):
@@ -82,59 +97,164 @@ class CNN(object):
                 if self.test_complete_attrs[i][1] == 'spoof':
                     attr = 0;
 
-
-
         # Acquire 64 random images from the soundfile
         # TODO This must be 64 !!
         ut_images = random.sample(ut_images, 64)
 
-        return ut_images , attr
+        return ut_images, attr
 
     # X = Features
-    def inference(self, X, reuse=True, is_training=True):
+    def vd10fdInference(self, X, reuse=True, is_training=True):
+        with tf.variable_scope("inference", reuse=reuse):
+            # Implement your network here
+            ##################################################### vd10-fpad-dpad ###############################################
+
+            conv1 = tf.layers.conv2d(
+                inputs=X,
+                filters=64,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            conv2 = tf.layers.conv2d(
+                inputs=conv1,
+                filters=64,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            pool1 = tf.nn.max_pool(value=conv2, ksize=[1, 2, 1, 1], strides=[1, 2, 1, 1], padding='VALID')
+
+            conv3 = tf.layers.conv2d(
+                inputs=pool1,
+                filters=128,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            conv4 = tf.layers.conv2d(
+                inputs=conv3,
+                filters=128,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            pool2 = tf.nn.max_pool(value=conv4, ksize=[1, 2, 1, 1], strides=[1, 2, 1, 1], padding='VALID')
+
+            conv5 = tf.layers.conv2d(
+                inputs=pool2,
+                filters=128,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            conv6 = tf.layers.conv2d(
+                inputs=conv5,
+                filters=128,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            pool3 = tf.nn.max_pool(value=conv6, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+
+            conv7 = tf.layers.conv2d(
+                inputs=pool3,
+                filters=256,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            conv8 = tf.layers.conv2d(
+                inputs=conv7,
+                filters=256,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            pool4 = tf.nn.max_pool(value=conv8, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+
+            conv9 = tf.layers.conv2d(
+                inputs=pool4,
+                filters=256,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            conv10 = tf.layers.conv2d(
+                inputs=conv9,
+                filters=256,
+                kernel_size=[3, 3],
+                padding="same",
+                activation=tf.nn.relu)
+
+            pool5 = tf.nn.max_pool(value=conv10, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+
+            # Flatten tensor into a batch of vectors
+            flat = tf.layers.flatten(pool5)
+
+            # Dense Layer with batch normalization TODO How many dense layers ?
+            if self.BATCH_NORM :
+                norm_flat = tf.layers.batch_normalization(flat, training=is_training)
+                dense = tf.layers.dense(inputs=norm_flat, units=2, activation=tf.nn.relu)
+            else :
+                # Dense Layer TODO How many dense layers ?
+                dense = tf.layers.dense(inputs=flat, units=2, activation=tf.nn.relu)
+
+            #  Add dropout operation; 0.6 probability that element will be kept
+            dropout = tf.layers.dropout(
+                inputs=dense, rate=0.4, training=is_training)
+
+            # Logits layer <- with dropout
+            logits = tf.layers.dense(inputs=dropout, units=10)
+
+            # Logits layer
+            # logits = dense
+            Y = logits
+
+        return Y
+
+    def baselineInference(self, X, reuse=True, is_training=True):
         with tf.variable_scope("inference", reuse=reuse):
             # Implement your network here
 
-
+            #############################################################BASELINE########################################################
             # Convolutional Layer #1
             conv1 = tf.layers.conv2d(
                 inputs=X,
                 filters=32,
-                kernel_size=[5, 5],
+                kernel_size=[3, 3],
                 padding="same",
                 activation=tf.nn.relu)
 
-            # Pooling Layer #1
-            pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
+            pool1 = tf.nn.max_pool(value=conv1, ksize=[1, 2, 1, 1], strides=[1, 2, 1, 1], padding='VALID')
 
-            # Convolutional Layer #2
             conv2 = tf.layers.conv2d(
                 inputs=pool1,
                 filters=64,
-                kernel_size=[5, 5],
+                kernel_size=[3, 3],
                 padding="same",
                 activation=tf.nn.relu)
 
-            # Pooling Layer #2
-            pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
-
+            pool2 = tf.nn.max_pool(value=conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
             # Flatten tensor into a batch of vectors
-            pool2_flat = tf.reshape(pool2, [-1, 4 * 16 * 64])
+            flat = tf.layers.flatten(pool2)
 
-            # Dense Layer
-            dense = tf.layers.dense(inputs=pool2_flat, units=2, activation=tf.nn.relu)
+            # Dense Layer with batch normalization TODO How many dense layers ?
+            if self.BATCH_NORM :
+                norm_flat = tf.layers.batch_normalization(flat, training=is_training)
+                dense = tf.layers.dense(inputs=norm_flat, units=2, activation=tf.nn.relu)
+            else :
+                dense = tf.layers.dense(inputs=flat, units=2, activation=tf.nn.relu)
 
-            # # Add dropout operation; 0.6 probability that element will be kept
-            # dropout = tf.layers.dropout(
-            #     inputs=dense, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN) TODO (BONUS) add dropout
+            #  Add dropout operation; 0.6 probability that element will be kept
+            dropout = tf.layers.dropout(
+                inputs=dense, rate=0.4, training=is_training)
 
             # Logits layer <- with dropout
-            # logits = tf.layers.dense(inputs=dropout, units=10)
+            logits = tf.layers.dense(inputs=dropout, units=10)
 
             # Logits layer
-            dense2 = tf.layers.dense(inputs=dense, units=2)
-
-            logits = dense
+            # logits = dense
             Y = logits
 
         return Y
@@ -145,23 +265,31 @@ class CNN(object):
         # Read Train Files
         self.get_train_data()
 
-        self.X_data_train = tf.placeholder(tf.float32,shape = [256, 17, 64,1])  # Define this TODO train data placeholders
-        self.Y_data_train = tf.placeholder(tf.int32,shape=256)  # Define this TODO do placeholders need self. ?
+        self.X_data_train = tf.placeholder(tf.float32,
+                                           shape=[self.BATCH_SIZE, 64, 17,
+                                                  1])  # Define this TODO train data placeholders
+        self.Y_data_train = tf.placeholder(tf.int32)  # Define this TODO do placeholders need self. ?
 
-        self.Y_net_train = self.inference(self.X_data_train, reuse=False)  # Network prediction
+        if self.MODEL == 'baseline':
+            self.Y_net_train = self.baselineInference(self.X_data_train, reuse=False)  # Network prediction
+        elif self.MODEL == 'vd10fd':
+            self.Y_net_train = self.vd10fdInference(self.X_data_train, reuse=False)  # Network prediction
+        else:
+            raise NameError('No Model Named ' + self.MODEL)
 
         # Loss of train data. Calculate Mean Loss
-        self.train_loss = tf.reduce_mean(
-            tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.Y_data_train, logits=self.Y_net_train,
-                                                           name='train_loss'))
+        train_cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.Y_data_train,
+                                                                             logits=self.Y_net_train,
+                                                                             name='train_loss')
 
-        # define learning rate decay method  
+        self.train_loss = tf.reduce_mean(train_cross_entropy)
+
+        # define learning rate decay method
         global_step = tf.Variable(0, trainable=False, name='global_step')
-        learning_rate = 0.001  # Define it TODO is learning rate correct ?
 
         # define the optimization algorithm
         optimizer = tf.train.AdamOptimizer(
-            learning_rate=learning_rate)  # Define it TODO Is optimizer correct ? TODO Check more optimizers.. maybe Adam
+            learning_rate=self.LEARNING_RATE)  # Define it TODO Is optimizer correct ? TODO Check more optimizers..
 
         trainable = tf.trainable_variables()
         self.update_ops = optimizer.minimize(self.train_loss, var_list=trainable, global_step=global_step)
@@ -171,36 +299,46 @@ class CNN(object):
         # Read Validation Files
         self.get_valid_data()
 
-        self.X_data_valid = tf.placeholder(tf.float32, shape = [256, 17, 64,1])  # Define this  TODO valid data placeholders
-        self.Y_data_valid = tf.placeholder(tf.int32, 256)  # Define this
+        self.X_data_valid = tf.placeholder(tf.float32,
+                                           shape=[self.BATCH_SIZE, 64, 17, 1])  # Define this  TODO valid data placeholders
 
-        self.Y_net_valid = self.inference(self.X_data_valid, reuse=True)  # Network prediction
+        self.Y_data_valid = tf.placeholder(tf.int32)  # Define this
+
+        if self.MODEL == 'baseline':
+            self.Y_net_valid = self.baselineInference(self.X_data_valid, reuse=True)  # Network prediction
+        elif self.MODEL == 'vd10fd':
+            self.Y_net_valid = self.vd10fdInference(self.X_data_valid, reuse=True)  # Network prediction
+        else:
+            raise NameError('No Model Named ' + self.MODEL)
 
         # Loss of validation data
-        self.valid_loss = tf.reduce_mean(
-            tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.Y_data_valid, logits=self.Y_net_valid,
-                                                           name='valid_loss'))
+        valid_cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.Y_data_valid,
+                                                                             logits=self.Y_net_valid,
+                                                                             name='valid_loss')
+        self.valid_loss = tf.reduce_mean(valid_cross_entropy)
 
     def train_epoch(self, sess):
         train_loss = 0
         batch = 0
 
         total_samples = len(self.train_data)
-        batches = total_samples // 256
+        batches = total_samples // self.BATCH_SIZE
 
         # Shuffle Images
-        
+
         c = list(zip(self.train_data, self.train_attrs))
         random.shuffle(c)
         self.train_data, self.train_attrs = zip(*c)
 
         print("Training Batches")
         for batch in progressbar.progressbar(range(0, batches)):
-            index = batch * 256
+            index = batch * self.BATCH_SIZE
 
-            data_batch = self.train_data[index:index + 256]
-            data_batch = np.reshape(data_batch, [256, 17, 64, 1])
-            attr_batch = self.train_attrs[index:index + 256]
+            data_batch = self.train_data[index:index + self.BATCH_SIZE]
+            data_batch = np.reshape(data_batch, [self.BATCH_SIZE, 64, 17, 1])
+            data_batch = np.array(data_batch, np.float32)
+
+            attr_batch = self.train_attrs[index:index + self.BATCH_SIZE]
 
             mean_loss, _ = sess.run([self.train_loss, self.update_ops],
                                     feed_dict={self.X_data_train: data_batch,
@@ -219,15 +357,15 @@ class CNN(object):
         batch = 0
 
         total_samples = len(self.valid_data)
-        batches = total_samples // 256
+        batches = total_samples // self.BATCH_SIZE
 
         print("Validate Batches")
         for batch in progressbar.progressbar(range(0, batches)):  # loop through train batches:
-            index = batch * 256
+            index = batch * self.BATCH_SIZE
 
-            data_batch = self.valid_data[index:index + 256]
-            data_batch = np.reshape(data_batch, [256, 17, 64, 1])
-            attr_batch = self.valid_attrs[index:index + 256]
+            data_batch = self.valid_data[index:index + self.BATCH_SIZE]
+            data_batch = np.reshape(data_batch, [self.BATCH_SIZE, 64, 17, 1])
+            attr_batch = self.valid_attrs[index:index + self.BATCH_SIZE]
 
             mean_loss = sess.run(self.valid_loss, feed_dict={self.X_data_valid: data_batch,
                                                              self.Y_data_valid: attr_batch})
@@ -243,8 +381,10 @@ class CNN(object):
     def train(self, sess):
         start_time = time.clock()
 
-        n_early_stop_epochs = 12  # Define it TODO WTF ???????
-        n_epochs = 64  # Define it
+        losses = []
+
+        n_early_stop_epochs = self.EARLY_STOP  # Define it TODO WTF ???????
+        n_epochs = self.EPOCHS  # Define it
 
         saver = tf.train.Saver(var_list=tf.trainable_variables(), max_to_keep=4)
 
@@ -257,7 +397,7 @@ class CNN(object):
         min_valid_loss = sys.float_info.max
         epoch = 0
         while (epoch < n_epochs):
-            print("Training Epoch:" + str(epoch+1)+"/"+str(n_epochs))
+            print("Training Epoch:" + str(epoch + 1) + "/" + str(n_epochs))
             epoch += 1
             epoch_start_time = time.clock()
 
@@ -269,6 +409,8 @@ class CNN(object):
             info_str = 'Epoch=' + str(epoch) + ', Train: ' + str(train_loss) + ', Valid: '
             info_str += str(valid_loss) + ', Time=' + str(epoch_end_time - epoch_start_time)
             print(info_str)
+
+            losses.append([train_loss,valid_loss])
 
             if valid_loss < min_valid_loss:
                 print('Best epoch=' + str(epoch))
@@ -285,47 +427,50 @@ class CNN(object):
 
         end_time = time.clock()
         print('Total time = ' + str(end_time - start_time))
+        return losses;
 
     # TODO Predictions
     def define_predict_operations(self):
         self.get_test_data()
-        self.X_test_data = tf.placeholder(tf.float32, shape = [None, 17, 64])
+        self.X_test_data = tf.placeholder(tf.float32, shape=[None, 64, 17, 1])
 
         # Pass through model
-        self.Y_net_test = self.inference(self.X_test_data, reuse=False)
+        print("Predicting " + self.MODEL + " model !!")
+        if self.MODEL == 'baseline':
+            self.Y_net_test = self.baselineInference(self.X_test_data, reuse=True, is_training=False)
+        elif self.MODEL == 'vd10fd':
+            self.Y_net_test = self.vd10fdInference(self.X_test_data, reuse=True, is_training=False)
+        else:
+            raise NameError('No Model Named ' + self.MODEL)
 
-        #Use softmax
+        # Use softmax
         self.Y_net_test = tf.nn.softmax(self.Y_net_test, axis=1)
 
-        #Use log
+        # Use log
         self.Y_net_test = tf.log(self.Y_net_test)
 
-        #Sum Columns
-        self.Y_net_test = tf.reduce_sum(self.Y_net_test,0)
+        # Sum Columns
+        self.Y_net_test = tf.reduce_sum(self.Y_net_test, 0)
 
         # Y_net_test <= [l0,l1]
 
-
     # Predict an utterance, Returns the prediction and the actual attribute
-    def predict_utterance(self, sess, wavname, model):
+    def predict_utterance(self, sess, wavname):
         # saver = tf.train.Saver(var_list=tf.trainable_variables(), max_to_keep=4)
         init_op = tf.group(tf.global_variables_initializer())
 
         sess.run(init_op)
-        testdata , attr = self.get_test_utterance(wavname)
+        testdata, attr = self.get_test_utterance(wavname)
+        testdata = np.reshape(testdata, [64, 64, 17, 1])
         results = sys.float_info.max
 
         # results <= [l0, l1]
         results = sess.run(self.Y_net_test, feed_dict={self.X_test_data: testdata})
 
-        #Spoof if l0 >= l1
+        # Spoof if l0 >= l1
         if results[0] >= results[1]:
             # Spoof = 0
-            return 0 , attr
+            return 0, attr
         else:
             # Genuine = 1
-            return 1 , attr
-
-
-
-
+            return 1, attr

@@ -65,6 +65,7 @@ class fdata(object):
 
                 #reshape the filterbanks to create banks of size 64
                 filterbanks = np.reshape(filterbanks, (-1, 64))
+
                 #make fmaps_list
                 fmaps_temp = self.make_fmaps(filterbanks)
 
