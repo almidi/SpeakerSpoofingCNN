@@ -75,17 +75,12 @@ class fdata(object):
                 #This is why I love python...
                 fmaps_attr_temp = [attr[:] for attr in attrs if attr[0] == self.wavfilenames[filenames.index(filename)] for k in fmaps_temp]
 
-                #Mean And SD will be calculated without the first and last 3 slices of each utterance
-                fmaps_for_norm.extend(fmaps_temp[3:len(fmaps_temp)-3])
 
                 self.fmaps_list.extend(fmaps_temp)
                 self.fmaps_attr_list.extend(fmaps_attr_temp)
 
 
-        #get mean
-        self.mean = np.mean(fmaps_for_norm)
-        #get standard deviation
-        self.std = np.std(fmaps_for_norm)
+
 
 
 

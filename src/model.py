@@ -42,10 +42,12 @@ class CNN(object):
         self.train_data = datareader.fmaps_list  # get images
         self.train_data = np.array(self.train_data, np.float32)
 
+
+
         #get mean
-        self.mean = datareader.mean
+        self.mean = np.mean(self.train_data)
         #get standard deviation
-        self.std = datareader.std
+        self.std = np.std(self.train_data)
 
         #normalize dataset
         print("Normalizing Train Data:")
@@ -223,14 +225,14 @@ class CNN(object):
                 dense = tf.layers.dense(inputs=norm_flat, units=2, activation=tf.nn.relu)
             else :
                 # Dense Layer TODO How many dense layers ?
-                dense = tf.layers.dense(inputs=flat, units=2, activation=tf.nn.relu)
+                dense = tf.layers.dense(inputs=flat, units=256, activation=tf.nn.relu)
 
             #  Add dropout operation; 0.6 probability that element will be kept
             dropout = tf.layers.dropout(
                 inputs=dense, rate=0.4, training=is_training)
 
             # Logits layer <- with dropout
-            logits = tf.layers.dense(inputs=dropout, units=10)
+            logits = tf.layers.dense(inputs=dropout, units=2)
 
             # Logits layer
             # logits = dense
@@ -269,14 +271,14 @@ class CNN(object):
                 norm_flat = tf.layers.batch_normalization(flat, training=is_training)
                 dense = tf.layers.dense(inputs=norm_flat, units=2, activation=tf.nn.relu)
             else :
-                dense = tf.layers.dense(inputs=flat, units=2, activation=tf.nn.relu)
+                dense = tf.layers.dense(inputs=flat, units=256, activation=tf.nn.relu)
 
             #  Add dropout operation; 0.6 probability that element will be kept
             dropout = tf.layers.dropout(
                 inputs=dense, rate=0.4, training=is_training)
 
             # Logits layer <- with dropout
-            logits = tf.layers.dense(inputs=dropout, units=10)
+            logits = tf.layers.dense(inputs=dropout, units=2)
 
             # Logits layer
             # logits = dense
