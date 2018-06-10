@@ -83,9 +83,9 @@ class fdata(object):
 
 
         #get mean
-        self.mean = np.mean(self.fmaps_for_norm)
+        self.mean = np.mean(fmaps_for_norm)
         #get standard deviation
-        self.std = np.std(self.fmaps_for_norm)
+        self.std = np.std(fmaps_for_norm)
 
 
 
