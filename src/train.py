@@ -49,3 +49,9 @@ if __name__ == "__main__":
     dict['accuracy'] = predict(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
     # Save data
     save_model_stats(dict.get('model_id'), dict)
+
+    dict = train(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
+    save_model_stats(dict.get('model_id'), dict)
+    dict['accuracy'] = predict(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
+    # Save data
+    save_model_stats(dict.get('model_id'), dict)
