@@ -5,7 +5,7 @@ from src.model import CNN
 from lib.model_io import *
 
 # TODO These values should be restored from the model
-def predict(epochs=12, model='baseline', early_stop=4, learning_rate=0.0001, batch_norm=True, batch_size=256):
+def predict(epochs=12, model='baseline', early_stop=4, learning_rate=0.0001, batch_norm=True, batch_size=256,mean = 0 ,std=1):
     #Enable gpu memory growth
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -21,7 +21,7 @@ def predict(epochs=12, model='baseline', early_stop=4, learning_rate=0.0001, bat
     # Create the network
     print("Create Network")
     network = CNN(model_id, model=model, epochs=epochs, early_stop=early_stop, learning_rate=learning_rate,
-                  batch_norm=batch_norm, batch_size=batch_size)
+                  batch_norm=batch_norm, batch_size=batch_size, mean=mean,std=std)
 
     print("Define Predict Operations")
     network.define_predict_operations()
