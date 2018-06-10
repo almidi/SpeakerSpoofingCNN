@@ -50,8 +50,8 @@ class CNN(object):
         #normalize dataset
         print("Normalizing Train Data:")
         for i in  progressbar.progressbar(range(0,len(self.train_data))):
-            self.train_data[i] = np.subtract(self.train_data[i],mean)
-            self.train_data[i] = np.divide(self.train_data[i],std)
+            self.train_data[i] = np.subtract(self.train_data[i],self.mean)
+            self.train_data[i] = np.divide(self.train_data[i],self.std)
 
         attrs = datareader.fmaps_attr_list  # get attributes
 
@@ -76,8 +76,8 @@ class CNN(object):
         #normalize dataset
         print("Normalizing Valid Data:")
         for i in progressbar.progressbar(range(0,len(self.valid_data))):
-            self.valid_data[i] = np.subtract(self.valid_data[i],mean)
-            self.valid_data[i] = np.divide(self.valid_data[i],std)
+            self.valid_data[i] = np.subtract(self.valid_data[i],self.mean)
+            self.valid_data[i] = np.divide(self.valid_data[i],self.std)
 
         attrs = datareader.fmaps_attr_list  # get attributes
 
@@ -100,8 +100,8 @@ class CNN(object):
 
         print("Normalizing Test Data:")
         for i in progressbar.progressbar(range(0,len(self.test_data))):
-            self.test_data = np.subtract(self.test_data,mean)
-            self.test_data = np.divide(self.test_data,std)
+            self.test_data = np.subtract(self.test_data,self.mean)
+            self.test_data = np.divide(self.test_data,self.std)
 
         self.test_complete_attrs = datareader.fmaps_attr_list  # get attributes
         self.filenames = datareader.wavfilenames
