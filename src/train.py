@@ -44,8 +44,8 @@ def train(epochs=12, model='baseline', early_stop=4, learning_rate=0.0001, batch
     return dict
 
 if __name__ == "__main__":
-    dict = train(epochs = 64,model='vd10fd',early_stop=12,learning_rate=0.001,batch_norm=True,batch_size=256)
+    dict = train(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
     save_model_stats(dict.get('model_id'), dict)
-    dict['accuracy'] = predict(epochs = 64,model='vd10fd',early_stop=12,learning_rate=0.001,batch_norm=True,batch_size=256)
+    dict['accuracy'] = predict(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
     # Save data
     save_model_stats(dict.get('model_id'), dict)
