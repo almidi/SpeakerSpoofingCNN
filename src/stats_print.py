@@ -12,7 +12,8 @@ for filename in filenames:
     plt.legend()
     text = "Model: " + dict.get("model") + ", Epochs: " + str(dict.get("epochs")) + ", Early_Stop: " + str(dict.get("early_stop"))
     text += "\nLearning Rate: " + str(dict.get("learning_rate")) + ", Batch Normalization: " + str(dict.get("batch_norm")) + ", Accuracy: " + str(dict.get("accuracy"))
-    print(text)
     plt.title(text)
+    plt.xlabel("Epochs")
+    plt.ylabel("Losses")
 
     plt.show()
