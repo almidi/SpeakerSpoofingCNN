@@ -222,7 +222,7 @@ class CNN(object):
             # Dense Layer with batch normalization TODO How many dense layers ?
             if self.BATCH_NORM :
                 norm_flat = tf.layers.batch_normalization(flat, training=is_training)
-                dense = tf.layers.dense(inputs=norm_flat, units=2, activation=tf.nn.relu)
+                dense = tf.layers.dense(inputs=norm_flat, units=256, activation=tf.nn.relu)
             else :
                 # Dense Layer TODO How many dense layers ?
                 dense = tf.layers.dense(inputs=flat, units=256, activation=tf.nn.relu)
@@ -269,7 +269,7 @@ class CNN(object):
             # Dense Layer with batch normalization TODO How many dense layers ?
             if self.BATCH_NORM :
                 norm_flat = tf.layers.batch_normalization(flat, training=is_training)
-                dense = tf.layers.dense(inputs=norm_flat, units=2, activation=tf.nn.relu)
+                dense = tf.layers.dense(inputs=norm_flat, units=256, activation=tf.nn.relu)
             else :
                 dense = tf.layers.dense(inputs=flat, units=256, activation=tf.nn.relu)
 
