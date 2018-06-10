@@ -48,8 +48,10 @@ class CNN(object):
         self.std = np.std(self.train_data)
 
         #normalize dataset
-        self.train_data = np.subtract(self.train_data,mean)
-        self.train_data = np.divide(self.train_data,std)
+        print("Normalizing Train Data:")
+        for i in range progressbar.progressbar((0,len(self.train_data)))
+            self.train_data[i] = np.subtract(self.train_data[i],mean)
+            self.train_data[i] = np.divide(self.train_data[i],std)
 
         attrs = datareader.fmaps_attr_list  # get attributes
 
@@ -72,8 +74,10 @@ class CNN(object):
         self.valid_data = np.array(self.valid_data, np.float32)
 
         #normalize dataset
-        self.valid_data = np.subtract(self.valid_data,mean)
-        self.valid_data = np.divide(self.valid_data,std)
+        print("Normalizing Valid Data:")
+        for i in range progressbar.progressbar((0,len(self.valid_data)))
+            self.valid_data[i] = np.subtract(self.valid_data[i],mean)
+            self.valid_data[i] = np.divide(self.valid_data[i],std)
 
         attrs = datareader.fmaps_attr_list  # get attributes
 
@@ -94,10 +98,10 @@ class CNN(object):
         datareader.get_data('eval')
         self.test_data = datareader.fmaps_list  # get images
 
-
-        #normalize dataset
-        self.test_data = np.subtract(self.test_data,mean)
-        self.test_data = np.divide(self.test_data,std)
+        print("Normalizing Valid Data:")
+        for i in range progressbar.progressbar((0,len(self.test_data)))
+            self.test_data = np.subtract(self.test_data,mean)
+            self.test_data = np.divide(self.test_data,std)
 
         self.test_complete_attrs = datareader.fmaps_attr_list  # get attributes
         self.filenames = datareader.wavfilenames
