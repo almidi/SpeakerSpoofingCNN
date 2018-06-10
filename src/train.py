@@ -28,11 +28,11 @@ def train(epochs=12, model='baseline', early_stop=4, learning_rate=0.0001, batch
     sess = tf.Session(config=config)
 
     try:
-        losses = network.train(sess)
+        losses,mean,std = network.train(sess)
 
         dict = {"model_id": model_id, "model": model, "train_losses": [r[0] for r in losses],
                 "valid_losses": [r[1] for r in losses], "epochs": epochs, "early_stop": early_stop,
-                "learning_rate": learning_rate, "batch_norm": batch_norm}
+                "learning_rate": learning_rate, "batch_norm": batch_norm, "mean":mean,"std":std}
     except KeyboardInterrupt:
         print()
     finally:
@@ -46,12 +46,6 @@ def train(epochs=12, model='baseline', early_stop=4, learning_rate=0.0001, batch
 if __name__ == "__main__":
     dict = train(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
     save_model_stats(dict.get('model_id'), dict)
-    dict['accuracy'] = predict(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
+    dict['accuracy'] = predict(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256,mean = dict.get("std"),mean = dict.get("std"))
     # Save data
     save_model_stats(dict.get('model_id'), dict)
-
-dict = train(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
-save_model_stats(dict.get('model_id'), dict)
-dict['accuracy'] = predict(epochs = 64,model='baseline',early_stop=12,learning_rate=0.0001,batch_norm=True,batch_size=256)
-# Save data
-save_model_stats(dict.get('model_id'), dict)

@@ -16,13 +16,15 @@ import random
 
 class CNN(object):
 
-    def __init__(self, model_id=None, model='baseline', batch_size=256, learning_rate=0.0001, epochs=12, early_stop=4, batch_norm=True):
+    def __init__(self, model_id=None, model='baseline', batch_size=256, learning_rate=0.0001, epochs=12, early_stop=4, batch_norm=True, mean = 0,std = 1):
         self.model_id = model_id
         self.train_data = []
         self.train_attrs = []
         self.valid_data = []
         self.valid_attrs = []
         self.test_data = []
+        self.mean = mean
+        self.std = std
         self.test_complete_attrs = []
         self.BATCH_SIZE = batch_size
         self.LEARNING_RATE = learning_rate
@@ -39,6 +41,15 @@ class CNN(object):
         datareader.get_data('train')
         self.train_data = datareader.fmaps_list  # get images
         self.train_data = np.array(self.train_data, np.float32)
+
+        #get mean
+        self.mean = np.mean(self.train_data)
+        #get standard deviation
+        self.std = np.std(self.train_data)
+
+        #normalize dataset
+        self.train_data = np.subtract(self.train_data,mean)
+        self.train_data = np.divide(self.train_data,std)
 
         attrs = datareader.fmaps_attr_list  # get attributes
 
@@ -60,6 +71,10 @@ class CNN(object):
         self.valid_data = datareader.fmaps_list  # get images
         self.valid_data = np.array(self.valid_data, np.float32)
 
+        #normalize dataset
+        self.valid_data = np.subtract(self.valid_data,mean)
+        self.valid_data = np.divide(self.valid_data,std)
+
         attrs = datareader.fmaps_attr_list  # get attributes
 
         # make attributes binary
@@ -78,6 +93,12 @@ class CNN(object):
         datareader = fdata()
         datareader.get_data('eval')
         self.test_data = datareader.fmaps_list  # get images
+
+
+        #normalize dataset
+        self.test_data = np.subtract(self.test_data,mean)
+        self.test_data = np.divide(self.test_data,std)
+
         self.test_complete_attrs = datareader.fmaps_attr_list  # get attributes
         self.filenames = datareader.wavfilenames
 
@@ -427,7 +448,7 @@ class CNN(object):
 
         end_time = time.clock()
         print('Total time = ' + str(end_time - start_time))
-        return losses;
+        return losses,self.mean,self.std;
 
     # TODO Predictions
     def define_predict_operations(self):
